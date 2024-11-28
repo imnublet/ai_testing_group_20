@@ -1,0 +1,21 @@
+name: ai_test  # The name of your environment
+channels:
+  - defaults  # Conda default channel
+dependencies:
+  - python=3.11
+  - tensorflow=2.17.0
+  - pillow
+  - scipy
+  - matplotlib
+  - pandas
+  - seaborn
+  - scikit-learn
+  - numpy
+  - skl2onnx
+  - onnxruntime
+  - onnx
+  - statsmodels
+  - xgboost
+  - onnxmltools
+  - pydot
+  - jupyter
