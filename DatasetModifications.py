@@ -61,7 +61,8 @@ oversample_gender(data, 1.25)
 address_columns = data.filter(regex='adres_recentste_wijk').columns 
 print(address_columns)
 
-def reweigh_address(df, addresses): # use like so: pipeline.fit(X, y, classification__sample_weight=sample_weights)
+def reweigh_address(df): # use like so: pipeline.fit(X, y, classification__sample_weight=sample_weights)
+    addresses = df.filter(regex='adres_recentste_wijk').columns 
     address_weights = {}
     #dict_example['c'] = 3  # new key, add
     for address in addresses:
@@ -70,10 +71,10 @@ def reweigh_address(df, addresses): # use like so: pipeline.fit(X, y, classifica
     print(address_weights)
 
     values = address_weights.values()
-    min_ = min(values)
-    max_ = max(values)
+    min_proportion = min(values)
+    max_proportion = max(values)
 
-    normalized_weights = {key: ((v - min_ ) / (max_ - min_) )  for (key, v) in address_weights.items() }
+    normalized_weights = {key: ((v - min_proportion) / (max_proportion - min_proportion) )  for (key, v) in address_weights.items() }
     print(normalized_weights)
 
     sample_weights = pd.Series(0, index=df.index, dtype=float)  
@@ -82,18 +83,6 @@ def reweigh_address(df, addresses): # use like so: pipeline.fit(X, y, classifica
     
     #print(sample_weights)
     return sample_weights
-    
-    #for (key, value) in normalized_weights.items():
-    #    print(key)
-    #    print(value)
-    #    df[key] * value
 
-    # Map addresses to weights
-    #address_weights = {'x': 2.0, 'y': 1.0, 'z': 0.5}
-    #sample_weights = X['address'].map(address_weights) # TODO: map weights to features
-
-    # Train a model with weights
-    #model = LogisticRegression()
-    #model.fit(X[['feature1']], y, sample_weight=sample_weights)
-reweigh_address(data, address_columns)
+reweigh_address(data)
 #print(len(data[data[address_columns[0]]== 1]))
