@@ -7,3 +7,5 @@ data/*
 .yml
 model/gboost.onnx
 
+#Virtual environment
+aitesting
