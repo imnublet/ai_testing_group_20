@@ -1,2 +1,9 @@
 # jupyter notebooks checkpoints
 .ipynb_checkpoints/*
+setup.sh
+data/*
+.vs/*
+.DS_Store/*
+.yml
+model/gboost.onnx
+
