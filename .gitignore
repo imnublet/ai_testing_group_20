@@ -9,3 +9,7 @@ model/gboost.onnx
 
 #Virtual environment
 aitesting
+venv113/
+
+__pycache__/
+

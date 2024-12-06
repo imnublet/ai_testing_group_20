@@ -29,30 +29,30 @@ def oversample_age(df, sampling_factor, feature='persoon_leeftijd_bij_onderzoek'
     """Resample data of people falling within given age bracket."""
     majority_df = df[df[feature].between(min_age, max_age, inclusive='both')] # df containing people aged between min_age and max_age
     minority_df = df[df.isin(majority_df) == False].dropna()
-    print(len(majority_df) + len(minority_df))
+    #print(len(majority_df) + len(minority_df))
 
     # Upsample the majority class
     majority_upsampled = resample(majority_df, replace=True, n_samples=int(len(majority_df)*sampling_factor), random_state=42)
-    print("length upsampled: ", len(majority_upsampled))
+    #print("length upsampled: ", len(majority_upsampled))
 
     # Combine the upsampled majority class with the minority class
     rebalanced_data = pd.concat([majority_upsampled, minority_df])
-    print(len(rebalanced_data))
+    #print(len(rebalanced_data))
     return rebalanced_data
 
 def oversample_gender(df, sampling_factor, feature='persoon_geslacht_vrouw', gender=0): 
     """Resample data of people with given gender. Default gender is male, male=0, female=1."""
     majority_df = df[df[feature] == gender] 
     minority_df = df[df[feature] != gender] 
-    print(len(majority_df) + len(minority_df))
+    #print(len(majority_df) + len(minority_df))
 
     # Upsample the majority class
     majority_upsampled = resample(majority_df, replace=True, n_samples=int(len(majority_df)*sampling_factor), random_state=42)
-    print("length upsampled: ", len(majority_upsampled))
+    #print("length upsampled: ", len(majority_upsampled))
 
     # Combine the upsampled majority class with the minority class
     rebalanced_data = pd.concat([majority_upsampled, minority_df])
-    print(len(rebalanced_data))  
+    #print(len(rebalanced_data))  
     return rebalanced_data  
 
 oversample_age(data, 1.25)
@@ -68,14 +68,14 @@ def reweigh_address(df): # use like so: pipeline.fit(X, y, classification__sampl
     for address in addresses:
         proportion = len(df[df[address]== 1]) / len(df)
         address_weights[address] = proportion
-    print(address_weights)
+    #print(address_weights)
 
     values = address_weights.values()
     min_proportion = min(values)
     max_proportion = max(values)
 
     normalized_weights = {key: ((v - min_proportion) / (max_proportion - min_proportion) )  for (key, v) in address_weights.items() }
-    print(normalized_weights)
+    #print(normalized_weights)
 
     sample_weights = pd.Series(0, index=df.index, dtype=float)  
     for address in addresses:
