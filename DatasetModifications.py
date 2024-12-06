@@ -86,3 +86,11 @@ def reweigh_address(df): # use like so: pipeline.fit(X, y, classification__sampl
 
 reweigh_address(data)
 #print(len(data[data[address_columns[0]]== 1]))
+
+def change_labels(df, percentage): # flips value in 'checked' column to create inconsistencies  
+    selection = resample(df, replace=True, n_samples=int(len(df)*percentage), random_state=42)
+    selection['checked'] = selection['checked'].replace([0,1], [1,0])
+    extra_labeled_data = pd.concat([df, selection])
+    return extra_labeled_data
+
+change_labels(data, 0.1)
