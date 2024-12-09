@@ -6,7 +6,7 @@ data/*
 .DS_Store/*
 .yml
 model/gboost.onnx
-
+*/.ipynb_checkpoints/*
 #Virtual environment
 aitesting
 venv113/
