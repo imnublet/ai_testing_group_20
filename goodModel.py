@@ -74,6 +74,13 @@ def data_augmentation_neighborhoods(df):
     extra_labeled_data = pd.concat([df, pd.DataFrame(new_rows)], ignore_index=True)
     return extra_labeled_data
 
+def data_augmentation_taaleis(df):
+    features_taal = ['contacten_onderwerp_boolean_taaleis___voldoet', 'contacten_onderwerp_boolean_beoordelen_taaleis', 'contacten_onderwerp_beoordelen_taaleis']
+    data = df
+    for feature in features_taal:
+        data = change_labels_data_augmentation_binary(data, feature)
+    return data
+
 
 
 print(len(data))
@@ -81,6 +88,10 @@ print("Data augmentation neighborhoods")
 new_data = data_augmentation_neighborhoods(data)
 print(len(new_data))
 
+print(len(data))
+print("Data augmentation Taaleis")
+data = data_augmentation_taaleis(data)
+print(len(data))
 
 print('Augmenting data for the ages')
 print(len(data))
