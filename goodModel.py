@@ -57,6 +57,31 @@ def data_augmentation_age(df):
     extra_labeled_data = pd.concat([df, pd.DataFrame(new_rows)], ignore_index=True)
     return extra_labeled_data
 
+def data_augmentation_neighborhoods(df):
+    wijk_features = [f for f in df.columns if 'adres_recentste_wijk_' in f]
+    selection = resample(df, replace=True, n_samples=int(len(df)), random_state=42)
+    new_rows = []
+    for index, row in selection.iterrows():
+        original_wijk = [w for w in wijk_features if row[w] == 1]
+        if(len(original_wijk)) > 0:
+            original_wijk = original_wijk[0]
+            other_wijken = [w for w in wijk_features if w != original_wijk]
+            for wijk in other_wijken:
+                new_row = row.copy()
+                new_row.loc[original_wijk] = 0
+                new_row.loc[wijk] = 1
+                new_rows.append(new_row)
+    extra_labeled_data = pd.concat([df, pd.DataFrame(new_rows)], ignore_index=True)
+    return extra_labeled_data
+
+
+
+print(len(data))
+print("Data augmentation neighborhoods")
+new_data = data_augmentation_neighborhoods(data)
+print(len(new_data))
+
+
 print('Augmenting data for the ages')
 print(len(data))
 
