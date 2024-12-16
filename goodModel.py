@@ -81,7 +81,10 @@ def data_augmentation_taaleis(df):
         data = change_labels_data_augmentation_binary(data, feature)
     return data
 
-
+def drop_taaleis_columns(df):
+    features_taal = ['contacten_onderwerp_boolean_taaleis___voldoet', 'contacten_onderwerp_boolean_beoordelen_taaleis', 'contacten_onderwerp_beoordelen_taaleis']
+    df_dropped = df.drop(columns=features_taal)
+    return df_dropped
 
 print(len(data))
 print("Data augmentation neighborhoods")
