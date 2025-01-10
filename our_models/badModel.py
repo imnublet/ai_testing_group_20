@@ -2,7 +2,7 @@ import pandas as pd
 from sklearn.utils import resample
 
 # about age: age can be between 18-67
-data = pd.read_csv('data/synth_data_for_training.csv')
+data = pd.read_csv('../data/synth_data_for_training.csv')
 #columns = data.columns
 columns = data.filter(regex='adres_recent|persoon_geslacht|persoon_leeftijd').columns 
 address_dict = {}

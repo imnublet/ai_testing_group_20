@@ -5,21 +5,21 @@ from numpy.random import randint
 from sklearn.utils import resample
 
 # about age: age can be between 18-67
-data = pd.read_csv('data/synth_data_for_training.csv')
+data = pd.read_csv('../data/synth_data_for_training.csv')
 
-feature_labels = pd.read_csv('data/feature_labels_v2.csv')
-print(len(feature_labels))
+feature_labels = pd.read_csv('../data/feature_labels_v2.csv')
+# print(len(feature_labels))
 discriminatory_features = feature_labels[feature_labels['Category'] == 'D']
-print(len(discriminatory_features))
+# print(len(discriminatory_features))
 
 subjective_features = feature_labels[feature_labels['Category'] == 'S']
-print(len(subjective_features))
+# print(len(subjective_features))
 
 non_relevant_features = feature_labels[feature_labels['Category'] == 'NR']
-print(len(non_relevant_features))
+# print(len(non_relevant_features))
 
 unclear_features = feature_labels[feature_labels['Category'] == 'U']
-print(len(unclear_features))
+# print(len(unclear_features))
 
 
 def change_labels_data_augmentation_binary(df, feature):  # flips value in feature column for data augmentation
@@ -82,25 +82,25 @@ def data_augmentation_taaleis(df):
     return data
 
 def drop_taaleis_columns(df):
-    features_taal = ['contacten_onderwerp_boolean_taaleis___voldoet', 'contacten_onderwerp_boolean_beoordelen_taaleis', 'contacten_onderwerp_beoordelen_taaleis']
+    features_taal = ['contacten_onderwerp_boolean_taaleis___voldoet', 'contacten_onderwerp_boolean_beoordelen_taaleis', 'contacten_onderwerp_beoordelen_taaleis', 'afspraak_verzenden_beschikking_i_v_m__niet_voldoen_aan_wet_taaleis']
     df_dropped = df.drop(columns=features_taal)
     return df_dropped
 
-print(len(data))
-print("Data augmentation neighborhoods")
-new_data = data_augmentation_neighborhoods(data)
-print(len(new_data))
-
+# print(len(data))
+# print("Data augmentation neighborhoods")
+# new_data = data_augmentation_neighborhoods(data)
+# print(len(new_data))
+#
 print(len(data))
 print("Data augmentation Taaleis")
 data = data_augmentation_taaleis(data)
 print(len(data))
 
-print('Augmenting data for the ages')
-print(len(data))
-
-data = data_augmentation_age(data)
-print(len(data))
-extra_data_gender = change_labels_data_augmentation_binary(data, 'persoon_geslacht_vrouw')
-print(len(data))
-print(len(extra_data_gender))
+# print('Augmenting data for the ages')
+# print(len(data))
+#
+# data = data_augmentation_age(data)
+# print(len(data))
+# extra_data_gender = change_labels_data_augmentation_binary(data, 'persoon_geslacht_vrouw')
+# print(len(data))
+# print(len(extra_data_gender))
