@@ -56,14 +56,14 @@ if __name__ == "__main__":
     DATASET_PATH = 'data/investigation_train_large_checked.csv'  # original file from Brightspace, no changes
     data = pd.read_csv(DATASET_PATH)
     X = data.drop(columns=['Ja', 'Nee', 'checked'])
-    original_data = X.iloc[0].values.reshape(1, -1).astype(np.float32)
+    original_data = X.iloc[2].values.reshape(1, -1).astype(np.float32)
     print("Original data:", original_data)
 
     # Initial seed (starting solution)
     seed = original_data.copy()
 
     # Number of iterations for optimization
-    num_iterations = 100
+    num_iterations = 400
 
     # Current fitness (using the ONNX model's predict method)
     input_name = session.get_inputs()[0].name
@@ -116,6 +116,9 @@ if __name__ == "__main__":
             seed = best_seed
             fitness = best_fitness
             print("New fitness value:", fitness)
+
+        if fitness < 0.5:
+            break
 
     # Final result
     final_output = session.run(None, {input_name: seed})
