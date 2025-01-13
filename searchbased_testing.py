@@ -2,10 +2,14 @@ import numpy as np
 import onnxruntime as ort
 import random
 
+import pandas as pd
+
 print("Using an ONNX model with tabular/text data...")
 
 # Replace this path with your ONNX model file
 MODEL_PATH = 'model_1/model_1.onnx'
+original_predictions = None
+original_pred = None
 
 # Load the ONNX model
 session = ort.InferenceSession(MODEL_PATH)
@@ -27,6 +31,7 @@ def evaluate_best(seeds, current_fitness, session):
 
     # The predictions should contain two outputs
     predicted_classes = predictions[0]  # First output: predicted class
+    original_pred = predicted_classes
     probabilities = predictions[1]  # Second output: class probabilities
 
     # Evaluate fitness for each seed
@@ -34,7 +39,7 @@ def evaluate_best(seeds, current_fitness, session):
         # Access the probabilities dictionary for the current seed
         prob_dict = probabilities[idx]  # Adjust based on how your model outputs the probabilities
 
-        target_class = 1  # The class you are interested in mutating towards
+        target_class = 0  # The class you are interested in mutating towards
         current_fitness = prob_dict.get(target_class, float('inf'))  # Get probability for the target class
 
         # Update best fitness based on your criteria
@@ -48,21 +53,26 @@ def evaluate_best(seeds, current_fitness, session):
 if __name__ == "__main__":
     # Simulate loading tabular/text data (e.g., 10 features per sample)
     num_features = 315
-    original_data = np.random.rand(1, num_features).astype(np.float32)  # Replace with your actual data
+    DATASET_PATH = 'data/investigation_train_large_checked.csv'  # original file from Brightspace, no changes
+    data = pd.read_csv(DATASET_PATH)
+    X = data.drop(columns=['Ja', 'Nee', 'checked'])
+    original_data = X.iloc[0].values.reshape(1, -1).astype(np.float32)
     print("Original data:", original_data)
 
     # Initial seed (starting solution)
     seed = original_data.copy()
 
     # Number of iterations for optimization
-    num_iterations = 300
+    num_iterations = 100
 
     # Current fitness (using the ONNX model's predict method)
     input_name = session.get_inputs()[0].name
     output = session.run(None, {input_name: seed})
 
     probabilities = output[1][0]  # Get the first element of the list
-    target_class = 1  # The class you want to mutate towards
+    original_predictions = probabilities
+    original_pred = output[0]
+    target_class = 0  # The class you want to mutate towards
     fitness = probabilities[target_class]  # Use the target class probability as fitness
     print(f"Initial fitness for target class {target_class}: {fitness}")
     for iteration in range(1, num_iterations + 1):
@@ -108,5 +118,11 @@ if __name__ == "__main__":
             print("New fitness value:", fitness)
 
     # Final result
+    final_output = session.run(None, {input_name: seed})
+    final_probabilities = final_output[1][0]  # Get the final probabilities
     print("Optimized data:", seed)
     print("Final fitness value:", fitness)
+    print("Original predictions", original_pred)  # Print final predicted classes
+    print("Final predictions:", final_output[0])  # Print final predicted classes
+    print("Original probabilities:", original_predictions)
+    print("Final probabilities:", final_probabilities)  # Print final probabilities
