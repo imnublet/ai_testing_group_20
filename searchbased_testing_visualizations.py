@@ -136,13 +136,12 @@ def mutate(seed, session):
     fitness_feature_dict = dict(zip(features_list, fitness_list))
     return fitness_feature_dict
 
-def visualize_fitness(dict): # TODO: change data to dict
+def visualize_fitness(dict): 
     # Create a separate subplot for each outer key
     num_subplots = len(dict)
-    fig, axes = plt.subplots(num_subplots, 1, figsize=(10, 6 * num_subplots), squeeze=False)  # Squeeze=False ensures axes is always 2D
-
+    fig, axes = plt.subplots(num_subplots, 1, figsize=(10, 6 * num_subplots), squeeze=False)  
     for i, (outer_key, inner_dict) in enumerate(dict.items()):
-        ax = axes[i][0]  # Access the i-th subplot
+        ax = axes[i][0] 
         print(inner_dict.items())
         features, fitnesses = zip(*inner_dict.items())
         fitness_list = list(fitnesses)
@@ -253,11 +252,11 @@ if __name__ == "__main__":
     X = data.drop(columns=['Ja', 'Nee', 'checked'])
     original_data = X.iloc[100].values.reshape(1, -1).astype(np.float32)
     print("Original data:", original_data)
-
+    
     # Initial seed (starting solution)
     seed = original_data.copy()
 
-    num_iterations = num_features
+    num_iterations = 5
     model1_fitness_feature_dict = {}
     model2_fitness_feature_dict = {}
     for i in range(1, num_iterations+1):
