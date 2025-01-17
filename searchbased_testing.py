@@ -11,6 +11,7 @@ np.set_printoptions(suppress=True, precision=0, floatmode='fixed')
 MODEL_PATH_1 = 'model_1/model_1.onnx'
 MODEL_PATH_2 = 'model_2/model_2.onnx'
 
+
 # Define the evaluation function using the ONNX model
 def evaluate_best(seeds, current_fitness, session):
     best_seed = seeds[0]  # Assume the first seed is the best initially
@@ -44,34 +45,31 @@ def evaluate_best(seeds, current_fitness, session):
 
     return best_seed, best_fitness
 
+
 def search_based_testing(session, seed, features_to_mutate):
-
-
     # Number of iterations for optimization
     num_iterations = 20
-    num_features = 315
     # Current fitness (using the ONNX model's predict method)
     input_name = session.get_inputs()[0].name
     output = session.run(None, {input_name: seed})
 
     probabilities = output[1][0]  # Get the first element of the list
-    original_predictions = probabilities
-    original_pred = output[0]
     target_class = 0  # The class you want to mutate towards
     fitness = probabilities[target_class]  # Use the target class probability as fitness
     print(f"Initial fitness for target class {target_class}: {fitness}")
+    final_iteration = 0
     for iteration in range(1, num_iterations + 1):
-        #print(f"Iteration: {iteration}")
+        final_iteration = final_iteration + 1
+        # print(f"Iteration: {iteration}")
         new_seed_plus = seed.copy()
         new_seed_minus = seed.copy()
 
         # Mutate one feature
         feature_index = random.randint(0, len(features_to_mutate) - 1)
         feature_index = features_to_mutate[feature_index]
-        feature_index = 215
 
         # Apply mutation (e.g., ±30% of the original value)
-        epsilon = 0.30
+        epsilon = 0.20
         best_seed = None
         best_fitness = None
 
@@ -105,10 +103,12 @@ def search_based_testing(session, seed, features_to_mutate):
             print("New fitness value:", fitness)
 
         if fitness < 0.5:
-            print("Final Iteration ", iteration)
+            print("Number of iteration ", final_iteration)
             break
 
+    print("Number of iteration ", final_iteration )
     return fitness, seed
+
 
 def run_search_based_on_both_models(model_path_1, model_path_2):
     # Load the ONNX model
@@ -121,68 +121,44 @@ def run_search_based_on_both_models(model_path_1, model_path_2):
     print(num_features)
 
     # Simulate loading tabular/text data (e.g., 10 features per sample)
-    num_features = 315
     DATASET_PATH = 'data/investigation_train_large_checked.csv'  # original file from Brightspace, no changes
     data = pd.read_csv(DATASET_PATH)
     X = data.drop(columns=['Ja', 'Nee', 'checked'])
-    original_data = X.iloc[250].values.reshape(1, -1).astype(np.float32)
+    original_data = X.iloc[100].values.reshape(1, -1).astype(np.float32)
     print("Original data:", original_data)
 
     # Initial seed (starting solution)
     seed = original_data.copy()
 
     # Current fitness (using the ONNX model's predict method)
-    output = session_1.run(None, {input_name: seed})
-
-    probabilities = output[1][0]  # Get the first element of the list
-    original_predictions = probabilities
-    original_pred = output[0]
-    # print(data.columns)
-    feature_index = data.columns.get_loc('persoon_geslacht_vrouw')
+    feature_index = data.columns.get_loc('persoon_leeftijd_bij_onderzoek')
     print(feature_index)
-    feature_index = 216
     print(data.columns[feature_index])
 
-    features_to_mutate = [215,216]
+    features_to_mutate = [feature_index]
 
+    output = session_1.run(None, {input_name: seed})
     fitness1, seed1 = search_based_testing(session_1, seed, features_to_mutate)
     final_output = session_1.run(None, {input_name: seed1})
-    final_probabilities = final_output[1][0]  # Get the final probabilities
     print("Optimized data 1:", seed1)
     print("Final fitness value 1:", fitness1)
-    print("Original predictions 1", original_pred)  # Print final predicted classes
+    print("Original predictions 1", output[0])  # Print final predicted classes
     print("Final predictions 1:", final_output[0])  # Print final predicted classes
-    print("Original probabilities 1:", original_predictions)
-    print("Final probabilities 1:", final_probabilities)  # Print final probabilities
-
-
+    print("Original probabilities 1:", output[1][0])
+    print("Final probabilities 1:", final_output[1][0])  # Print final probabilities
 
     print("MODEL 2 ------------------------------------")
 
     output = session_2.run(None, {input_name: seed})
-
-    probabilities = output[1][0]  # Get the first element of the list
-    original_predictions = probabilities
-    original_pred = output[0]
-    # print(data.columns)
-    feature_index = data.columns.get_loc('persoon_geslacht_vrouw')
-    print(feature_index)
-    feature_index = 216
-    print(data.columns[feature_index])
-
-    features_to_mutate = [215,216]
-
     fitness2, seed2 = search_based_testing(session_2, seed, features_to_mutate)
     final_output = session_2.run(None, {input_name: seed2})
-    final_probabilities = final_output[1][0]  # Get the final probabilities
     print("Optimized data 2:", seed2)
     print("Final fitness value 2:", fitness2)
-    print("Original predictions 2", original_pred)  # Print final predicted classes
+    print("Original predictions 2", output[0])  # Print final predicted classes
     print("Final predictions 2:", final_output[0])  # Print final predicted classes
-    print("Original probabilities 2:", original_predictions)
-    print("Final probabilities 2:", final_probabilities)  # Print final probabilities
+    print("Original probabilities 2:", output[1][0])
+    print("Final probabilities 2:", final_output[1][0])  # Print final probabilities
 
 
 # Final result
 run_search_based_on_both_models(MODEL_PATH_1, MODEL_PATH_2)
-
