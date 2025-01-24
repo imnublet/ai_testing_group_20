@@ -15,6 +15,20 @@ np.set_printoptions(suppress=True, precision=0, floatmode='fixed')
 MODEL_PATH_1 = 'model_1/model_1.onnx'
 MODEL_PATH_2 = 'model_2/model_2.onnx'
 
+feature_labels = pd.read_csv('data/feature_labels_v2.csv')
+# print(len(feature_labels))
+discriminatory_features = feature_labels[feature_labels['Category'] == 'D']
+# print(len(discriminatory_features))
+
+subjective_features = feature_labels[feature_labels['Category'] == 'S']
+# print(len(subjective_features))
+
+non_relevant_features = feature_labels[feature_labels['Category'] == 'NR']
+# print(len(non_relevant_features))
+
+unclear_features = feature_labels[feature_labels['Category'] == 'U']
+# print(len(unclear_features))
+
 
 # Define the evaluation function using the ONNX model
 def evaluate_best(seeds, current_fitness, session):
@@ -70,6 +84,7 @@ def search_based_testing(session, seed, features_to_mutate):
         new_seed_minus = seed.copy()
 
         # Mutate one feature
+
         feature_index = random.randint(0, len(features_to_mutate) - 1)
         feature_index = features_to_mutate[feature_index]
 
@@ -156,8 +171,24 @@ def run_search_based_on_both_models(model_path_1, model_path_2):
         #
         # features_to_mutate = [feature_index]
 
-        features_to_mutate = [index for index, column in enumerate(data.columns) if
-                              "_" in column]
+        # features_to_mutate = [index for index, column in enumerate(data.columns) if
+        #                       "_" in column]
+
+        #features_to_mutate = [index for index, column in enumerate(discriminatory_features)]
+
+        # print(discriminatory_features)
+        #
+        # print(discriminatory_features._data)
+        # features_to_mutate = [index for index, column in enumerate(data.columns) if
+        #                       discriminatory_features['Feature'].tolist() in column]
+
+        features_to_mutate = discriminatory_features.index.tolist()
+        print(discriminatory_features['Feature'].tolist())
+        print(features_to_mutate)
+
+        print("LENGTH OF FEATURS TO MUTATE")
+        print(len(features_to_mutate))
+
 
         # Print the indices and corresponding column names
         # print(features_to_mutate)
@@ -246,7 +277,7 @@ def bar_graph_iterations(iterations1, iterations2, max_iterations):
 
     # Add some text for labels, title and custom x-axis tick labels, etc.
     ax.set_ylabel('Number of Iterations', fontsize=12)
-    ax.set_title('Number of Iterations for each model by bucket', fontsize=14, weight='bold')
+    ax.set_title('Number of Iterations for each model - Discriminatory Features', fontsize=14, weight='bold')
     ax.set_xticks(x)
     ax.set_xticklabels(buckets, fontsize=10)
     ax.legend(fontsize=10)
@@ -284,10 +315,12 @@ def scatter_plot_side_by_side(prob_diff1, iterations1, prob_diff2, iterations2):
 
     # Create subplots
     fig, axes = plt.subplots(1, 2, figsize=(12, 6), sharey=True)
-
+    fig.suptitle("Discriminatory Features")
     # Scatter plot for Model 1
+
     axes[0].scatter(prob_diff1, iterations1, color='skyblue', alpha=0.7, edgecolor='black')
     axes[0].set_title("Model 1", fontsize=14, weight='bold')
+    axes[0].set_xlim(0.0, 1.0)
     axes[0].set_xlabel('Probability Difference', fontsize=12)
     axes[0].set_ylabel('Number of Iterations', fontsize=12)
     axes[0].grid(True, linestyle='--', alpha=0.6)
@@ -295,6 +328,7 @@ def scatter_plot_side_by_side(prob_diff1, iterations1, prob_diff2, iterations2):
     # Scatter plot for Model 2
     axes[1].scatter(prob_diff2, iterations2, color='plum', alpha=0.7, edgecolor='black')
     axes[1].set_title("Model 2", fontsize=14, weight='bold')
+    axes[1].set_xlim(0.0, 1.0)
     axes[1].set_xlabel('Probability Difference', fontsize=12)
     axes[1].grid(True, linestyle='--', alpha=0.6)
 
